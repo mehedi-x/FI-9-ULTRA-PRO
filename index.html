@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FI-9 ULTRA PRO (Test Version)</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🧾 FI-9 ULTRA PRO</h1>
+    <p>Test Version - Offline Invoice Software</p>
+  </header>
+
+  <main id="app">
+    <section>
+      <h2>Invoice Info</h2>
+      <label>
+        Invoice Number:
+        <input type="text" placeholder="#0001" />
+      </label><br><br>
+      <label>
+        Issue Date:
+        <input type="date" />
+      </label>
+      <label>
+        Due Date:
+        <input type="date" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Customer Info</h2>
+      <label>
+        Customer Name:
+        <input type="text" placeholder="e.g. FUOCO Ltd" />
+      </label><br><br>
+      <label>
+        Phone Number:
+        <input type="text" placeholder="+8801xxxxxxxxx" />
+      </label>
+    </section>
+
+    <section>
+      <h2>Test Invoice Table</h2>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>SL</th>
+            <th>Branch</th>
+            <th>Pickup</th>
+            <th>Delivery</th>
+            <th>Tier</th>
+            <th>Bill</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Shonir Akhra</td>
+            <td>0</td>
+            <td>0</td>
+            <td>Lite</td>
+            <td>500</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Uttara</td>
+            <td>0</td>
+            <td>7825</td>
+            <td>Lite</td>
+            <td>500</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>Total Bill: <strong>TK 4,000</strong></h3>
+    </section>
+
+    <button onclick="window.print()">🖨️ Print or Save as PDF</button>
+  </main>
+
+  <footer>
+    <p>Thank you for using FI-9 Ultra Pro Test Version</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
