@@ -1,228 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice Generator</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Nunito"
-    />
+    <title>Advanced Invoice Generator</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.0/html2pdf.bundle.min.js"
-      integrity="sha512-YLG3N5dufxTTEyEgDIKb3IMDTz/NsWiGH6+6OvzrJBu/XZNRiZb9UxuNoMn8RdTtuKgpjtzTeWm/ITkZkj2i3Q=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-  </head>
-  <body>
-    <header><h1>INVOICE GENERATOR</h1></header>
+    <!-- PDF Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.0/html2pdf.bundle.min.js"></script>
+    <!-- QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <h1><i class="fas fa-file-invoice"></i> INVOICE GENERATOR</h1>
+            <div class="theme-switcher">
+                <button id="theme-toggle" title="Toggle dark/light mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
 
     <div class="app">
-      <div id="invoice-container">
-        <!-- Invoice Title -->
-        <div class="invoice-title">TAX INVOICE</div>
-        <!-- Invoice Header -->
-        <div class="invoice-header">
-          <div class="sec-1">
-            <div>
-              <label for="invoice-date">Bill Date:</label>
-              <input
-                type="date"
-                id="invoice-date"
-                class="input-control"
-                style="max-width: 140px"
-              />
-            </div>
-            <div>
-              <label for="due-date">Due Date:</label>
-              <input
-                type="date"
-                id="due-date"
-                class="input-control"
-                style="max-width: 140px"
-                required
-              />
-            </div>
-          </div>
-          <div class="sec-2">
-            <label for="invoice-num">Invoice Number:</label>
-            <input
-              type="number"
-              id="invoice-num"
-              class="input-control"
-              value="1"
-              required
-            />
-          </div>
+        <div class="toolbar">
+            <button id="save-template" class="btn"><i class="fas fa-save"></i> Save Template</button>
+            <button id="load-template" class="btn"><i class="fas fa-folder-open"></i> Load Template</button>
+            <button id="currency-selector" class="btn"><i class="fas fa-dollar-sign"></i> Currency</button>
         </div>
-        <hr />
-        <!-- Billing Address Section -->
-        <div class="address-section">
-          <div>
-            <label for="bill-from">Bill From:</label>
-            <input
-              type="text"
-              placeholder="Invoice from?"
-              id="bill-from"
-              class="input-control"
-              required
-            />
-            <textarea
-              name="bill-from-address"
-              class="input-control"
-              placeholder="Billing Address"
-              rows="5"
-            ></textarea>
-          </div>
-          <div>
-            <label for="bill-to">Bill To:</label>
-            <input
-              type="text"
-              placeholder="Invoice to?"
-              id="bill-to"
-              class="input-control"
-              required
-            />
-            <textarea
-              name="bill-to-address"
-              placeholder="Billing Address"
-              rows="5"
-              class="input-control"
-            ></textarea>
-          </div>
-        </div>
-        <hr />
-        <!-- Product Section -->
-        <div class="invoice-body">
-          <table>
-            <!-- Header of Product Section  -->
-            <thead>
-              <tr>
-                <th>PRODUCT</th>
-                <th>UNIT</th>
-                <th>PRICE</th>
-                <th>AMOUNT</th>
-                <th class="action">ACTION</th>
-              </tr>
-            </thead>
-            <!-- Body of Product Section -->
-            <tbody id="item-list">
-              <tr class="single-row">
-                <td>
-                  <input
-                    type="text"
-                    placeholder="Product name"
-                    name="product name"
-                    id="product-name"
-                    class="input-control"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="unit"
-                    id="unit"
-                    class="input-control"
-                    onkeyup="getInput()"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="price"
-                    id="price"
-                    class="input-control"
-                    onkeyup="getInput()"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="amount"
-                    id="amount"
-                    class="input-control amount"
-                    disabled
-                  />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    id="delete-item"
-                    class="btn delete-items"
-                    onclick="removeRow(this)"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button id="add-row" class="btn">Add Item</button>
-        </div>
-        <!-- Total Section -->
-        <div class="total-section">
-          <div class="left-sec">
-            <div>
-              <span>Subtotal:</span
-              ><input
-                type="number"
-                id="subtotal"
-                class="input-control"
-                placeholder="0"
-                readonly
-              />
+
+        <div id="invoice-container">
+            <!-- Company Logo Section -->
+            <div class="logo-section">
+                <input type="file" id="logo-upload" accept="image/*" hidden>
+                <label for="logo-upload" class="logo-upload-label">
+                    <div id="logo-preview">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Logo</span>
+                    </div>
+                </label>
             </div>
-            <div>
-              <span>Tax: (%)</span
-              ><input
-                type="number"
-                id="tax"
-                class="input-control"
-                placeholder="0"
-              />
+
+            <!-- Invoice Title -->
+            <div class="invoice-title">
+                <input type="text" class="editable-title" value="TAX INVOICE" placeholder="Invoice Title">
             </div>
-            <div>
-              <span>Discount: (%)</span
-              ><input
-                type="number"
-                id="discount"
-                class="input-control"
-                placeholder="0"
-              />
+
+            <!-- Invoice Header -->
+            <div class="invoice-header">
+                <div class="sec-1">
+                    <div class="date-picker">
+                        <label for="invoice-date">
+                            <i class="fas fa-calendar"></i> Bill Date:
+                        </label>
+                        <input type="date" id="invoice-date" class="input-control" required>
+                    </div>
+                    <div class="date-picker">
+                        <label for="due-date">
+                            <i class="fas fa-clock"></i> Due Date:
+                        </label>
+                        <input type="date" id="due-date" class="input-control" required>
+                    </div>
+                    <div class="payment-terms">
+                        <label for="payment-terms">Payment Terms:</label>
+                        <select id="payment-terms" class="input-control">
+                            <option value="immediate">Immediate</option>
+                            <option value="15">Net 15</option>
+                            <option value="30">Net 30</option>
+                            <option value="60">Net 60</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sec-2">
+                    <div class="invoice-number">
+                        <label for="invoice-num">
+                            <i class="fas fa-hashtag"></i> Invoice Number:
+                        </label>
+                        <input type="text" id="invoice-num" class="input-control" 
+                               pattern="[A-Za-z0-9-]+" placeholder="INV-001" required>
+                    </div>
+                    <div class="reference">
+                        <label for="reference">Reference:</label>
+                        <input type="text" id="reference" class="input-control" 
+                               placeholder="PO Number/Reference">
+                    </div>
+                </div>
             </div>
-            <hr />
-            <div><span>Total:</span><span id="total">0.00</span></div>
-          </div>
+
+            <!-- Billing Address Section -->
+            <div class="address-section">
+                <div class="from-section">
+                    <label for="bill-from">
+                        <i class="fas fa-building"></i> Bill From:
+                    </label>
+                    <input type="text" id="bill-from" class="input-control" 
+                           placeholder="Your Company Name" required>
+                    <textarea name="bill-from-address" class="input-control" 
+                              placeholder="Your Address&#10;Phone&#10;Email&#10;Tax ID" rows="5"></textarea>
+                </div>
+                <div class="to-section">
+                    <label for="bill-to">
+                        <i class="fas fa-user"></i> Bill To:
+                    </label>
+                    <input type="text" id="bill-to" class="input-control" 
+                           placeholder="Client Name" required>
+                    <textarea name="bill-to-address" class="input-control" 
+                              placeholder="Client Address&#10;Phone&#10;Email&#10;Tax ID" rows="5"></textarea>
+                </div>
+            </div>
+
+            <!-- Product Section -->
+            <div class="invoice-body">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>ITEM</th>
+                            <th>DESCRIPTION</th>
+                            <th>QUANTITY</th>
+                            <th>UNIT PRICE</th>
+                            <th>TAX (%)</th>
+                            <th>AMOUNT</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="item-list">
+                        <tr class="item-row">
+                            <td>
+                                <input type="text" class="input-control item-name" 
+                                       placeholder="Item name" required>
+                            </td>
+                            <td>
+                                <textarea class="input-control item-description" 
+                                          placeholder="Description" rows="2"></textarea>
+                            </td>
+                            <td>
+                                <input type="number" class="input-control quantity" 
+                                       min="1" value="1" required>
+                            </td>
+                            <td>
+                                <input type="number" class="input-control price" 
+                                       min="0" step="0.01" required>
+                            </td>
+                            <td>
+                                <input type="number" class="input-control tax-rate" 
+                                       min="0" max="100" value="0">
+                            </td>
+                            <td>
+                                <input type="number" class="input-control amount" readonly>
+                            </td>
+                            <td>
+                                <button type="button" class="btn delete-row">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="add-item" class="btn">
+                    <i class="fas fa-plus"></i> Add Item
+                </button>
+            </div>
+
+            <!-- Total Section -->
+            <div class="total-section">
+                <div class="subtotal-section">
+                    <div class="row">
+                        <span>Subtotal:</span>
+                        <span class="subtotal-amount">0.00</span>
+                    </div>
+                    <div class="row">
+                        <span>Tax Total:</span>
+                        <span class="tax-amount">0.00</span>
+                    </div>
+                    <div class="row">
+                        <label for="discount">Discount:</label>
+                        <div class="discount-inputs">
+                            <input type="number" id="discount" min="0" max="100" value="0">
+                            <select id="discount-type">
+                                <option value="percentage">%</option>
+                                <option value="fixed">Fixed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row total">
+                        <span>Total:</span>
+                        <span class="total-amount">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="additional-info">
+                <div class="notes-section">
+                    <label for="notes">Notes:</label>
+                    <textarea id="notes" class="input-control" 
+                              placeholder="Additional notes to the client" rows="3"></textarea>
+                </div>
+                <div class="terms-section">
+                    <label for="terms">Terms & Conditions:</label>
+                    <textarea id="terms" class="input-control" 
+                              placeholder="Terms and conditions" rows="3"></textarea>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="payment-info">
+                <h3>Payment Details</h3>
+                <div class="bank-details">
+                    <input type="text" placeholder="Bank Name" class="input-control">
+                    <input type="text" placeholder="Account Number" class="input-control">
+                    <input type="text" placeholder="SWIFT/BIC" class="input-control">
+                </div>
+            </div>
+
+            <!-- QR Code Section -->
+            <div class="qr-section">
+                <div id="qr-code"></div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <div class="signature-box">
+                    <canvas id="signature-pad"></canvas>
+                    <button id="clear-signature" class="btn">Clear</button>
+                </div>
+                <input type="text" placeholder="Name & Designation" class="input-control">
+            </div>
         </div>
-        <hr />
-        <!-- Notes Section -->
-        <div class="notes">
-          <label for="notes">Notes:</label>
-          <textarea
-            name="notes"
-            id="notes"
-            class="input-control"
-            placeholder="Thanks for your bussiness!"
-            rows="1"
-          ></textarea>
-        </div>
-        <!-- Button Container -->
+
+        <!-- Action Buttons -->
         <div class="button-container">
-          <button type="reset" class="btn">Reset</button>
-          <button type="button" id="generate-pdf" class="btn">
-            Generate PDF
-          </button>
+            <button type="reset" class="btn">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+            <button id="preview-pdf" class="btn">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button id="download-pdf" class="btn">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+            <button id="email-invoice" class="btn">
+                <i class="fas fa-envelope"></i> Email Invoice
+            </button>
         </div>
-      </div>
     </div>
+
     <footer>
-      <p>Designed and &lt;/&gt; by Prerna Saraogi</p>
+        <p>Created with <i class="fas fa-heart"></i> by Your Company</p>
     </footer>
+
     <script src="app.js"></script>
-  </body>
+</body>
 </html>
