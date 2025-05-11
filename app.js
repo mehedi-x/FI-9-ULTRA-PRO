@@ -1,238 +1,229 @@
-const billDateInput = document.getElementById("invoice-date");
-const dueDateInput = document.getElementById("due-date");
-const tBody = document.getElementById("item-list");
-const taxInput = document.getElementById("tax");
-const discountInput = document.getElementById("discount");
-const resetButton = document.querySelector("button[type='reset']");
+// Global Variables
+let items = [];
+let total = 0;
+let invoiceNumber = 1;
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Get today's date in IST
-  const today = new Date();
-  const offset = 5.5 * 60 * 60 * 1000;
-  istDate = new Date(today.getTime() + offset).toISOString().split("T")[0];
-
-  if (billDateInput) {
-    billDateInput.value = istDate;
-    billDateInput.setAttribute("readonly", true);
-  }
-  dueDateInput.setAttribute("min", istDate);
+// Theme Switcher
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
 });
 
-const addNewRow = () => {
-  const row = document.createElement("tr");
-  row.className = "single-row";
-  row.innerHTML = `<td>
-                  <input
-                    type="text"
-                    placeholder="Product name"
-                    name="product name"
-                    id="product-name"
-                    class="input-control"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="unit"
-                    id="unit"
-                    class="input-control"
-                    onkeyup="getInput()"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="price"
-                    id="price"
-                    class="input-control"
-                    onkeyup="getInput()"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    name="amount"
-                    id="amount"
-                    class="input-control amount"
-                    disabled
-                  />
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    id="delete-item"
-                    class="btn delete-items"
-                    onclick="removeRow(this)"
-                  >
-                    Delete
-                  </button>
-                </td>`;
-
-  tBody.appendChild(row);
-};
-
-document.getElementById("add-row").addEventListener("click", (e) => {
-  e.preventDefault();
-  addNewRow();
-});
-
-const getInput = () => {
-  let rows = document.querySelectorAll("tr.single-row");
-  rows.forEach((currentRow) => {
-    let unit = currentRow.querySelector("#unit").value;
-    let price = currentRow.querySelector("#price").value;
-
-    amount = unit * price;
-    currentRow.querySelector("#amount").value = amount;
-    overallSum();
-  });
-};
-
-overallSum = () => {
-  let amountInputs = document.getElementsByName("amount");
-  let subtotal = 0;
-  for (let i = 0; i < amountInputs.length; i++) {
-    if (amountInputs[i].value) {
-      subtotal += +amountInputs[i].value;
+// Logo Upload
+document.getElementById('logo-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '150px';
+            img.style.maxHeight = '150px';
+            document.getElementById('logo-preview').innerHTML = '';
+            document.getElementById('logo-preview').appendChild(img);
+        }
+        reader.readAsDataURL(file);
     }
-    document.getElementById("subtotal").value = subtotal;
+});
+
+// Add Item Row
+document.getElementById('add-item').addEventListener('click', addItemRow);
+
+function addItemRow() {
+    const tbody = document.getElementById('item-list');
+    const tr = document.createElement('tr');
+    tr.className = 'item-row';
+    tr.innerHTML = `
+        <td><input type="text" class="input-control item-name" placeholder="Item name" required></td>
+        <td><textarea class="input-control item-description" placeholder="Description" rows="2"></textarea></td>
+        <td><input type="number" class="input-control quantity" min="1" value="1" required></td>
+        <td><input type="number" class="input-control price" min="0" step="0.01" required></td>
+        <td><input type="number" class="input-control tax-rate" min="0" max="100" value="0"></td>
+        <td><input type="number" class="input-control amount" readonly></td>
+        <td><button type="button" class="btn delete-row"><i class="fas fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+    
+    // Add event listeners to new row
+    addRowEventListeners(tr);
+}
+
+// Calculate Row Amount
+function calculateRowAmount(row) {
+    const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+    const price = parseFloat(row.querySelector('.price').value) || 0;
+    const taxRate = parseFloat(row.querySelector('.tax-rate').value) || 0;
+    
+    const subtotal = quantity * price;
+    const tax = subtotal * (taxRate / 100);
+    const total = subtotal + tax;
+    
+    row.querySelector('.amount').value = total.toFixed(2);
     calculateTotal();
-  }
-};
+}
 
+// Calculate Total
 function calculateTotal() {
-  const subtotal = parseFloat(document.getElementById("subtotal").value) || 0;
-  const taxPercentage = parseFloat(taxInput.value) || 0;
-  const discountPercentage = parseFloat(discountInput.value) || 0;
-
-  // Calculate tax and discount amounts
-  const taxAmount = (subtotal * taxPercentage) / 100;
-  const discountAmount = (subtotal * discountPercentage) / 100;
-
-  // Calculate the total
-  const total = subtotal + taxAmount - discountAmount;
-
-  document.getElementById("total").innerHTML = total.toFixed(2);
-}
-
-taxInput.addEventListener("input", calculateTotal);
-discountInput.addEventListener("input", calculateTotal);
-
-function removeRow(button) {
-  const row = button.closest("tr");
-  row.remove();
-  overallSum();
-}
-
-resetButton.addEventListener("click", () => {
-  // Reset all text inputs, number inputs, and textareas
-  document.querySelectorAll(".input-control").forEach((input) => {
-    if (input.type === "text" || input.type === "textarea") {
-      input.value = "";
-    } else if (input.type === "number") {
-      input.value = "0";
-    }
-  });
-
-  // Reset date fields
-  if (billDateInput) billDateInput.value = istDate;
-  if (dueDateInput) {
-    dueDateInput.value = "";
-    dueDateInput.setAttribute("min", istDate);
-  }
-
-  // Reset subtotal and total
-  document.getElementById("subtotal").value = "0";
-  document.getElementById("total").textContent = "0.00";
-
-  // Remove dynamically added rows
-  const rows = tBody.querySelectorAll("tr.single-row");
-  rows.forEach((row, index) => {
-    if (index > 0) row.remove();
-  });
-
-  // Reset the first row's fields
-  const firstRow = tBody.querySelector("tr.single-row");
-  if (firstRow) {
-    firstRow.querySelectorAll(".input-control").forEach((input) => {
-      input.value = "";
-      if (input.classList.contains("amount")) {
-        input.disabled = true;
-      }
+    const rows = document.querySelectorAll('.item-row');
+    let subtotal = 0;
+    let taxTotal = 0;
+    
+    rows.forEach(row => {
+        const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+        const price = parseFloat(row.querySelector('.price').value) || 0;
+        const taxRate = parseFloat(row.querySelector('.tax-rate').value) || 0;
+        
+        const rowSubtotal = quantity * price;
+        const rowTax = rowSubtotal * (taxRate / 100);
+        
+        subtotal += rowSubtotal;
+        taxTotal += rowTax;
     });
-  }
+    
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const discountType = document.getElementById('discount-type').value;
+    
+    let discountAmount = 0;
+    if (discountType === 'percentage') {
+        discountAmount = subtotal * (discount / 100);
+    } else {
+        discountAmount = discount;
+    }
+    
+    const total = subtotal + taxTotal - discountAmount;
+    
+    document.querySelector('.subtotal-amount').textContent = subtotal.toFixed(2);
+    document.querySelector('.tax-amount').textContent = taxTotal.toFixed(2);
+    document.querySelector('.total-amount').textContent = total.toFixed(2);
+}
+
+// Delete Row
+function deleteRow(button) {
+    button.closest('tr').remove();
+    calculateTotal();
+}
+
+// Add Event Listeners to Row
+function addRowEventListeners(row) {
+    const inputs = row.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => calculateRowAmount(row));
+    });
+    
+    row.querySelector('.delete-row').addEventListener('click', function() {
+        deleteRow(this);
+    });
+}
+
+// Generate QR Code
+function generateQR() {
+    const qrData = {
+        invoiceNumber: document.getElementById('invoice-num').value,
+        amount: document.querySelector('.total-amount').textContent,
+        date: document.getElementById('invoice-date').value
+    };
+    
+    const qr = new QRCode(document.getElementById('qr-code'), {
+        text: JSON.stringify(qrData),
+        width: 128,
+        height: 128
+    });
+}
+
+// Initialize Signature Pad
+const canvas = document.getElementById('signature-pad');
+const signaturePad = new SignaturePad(canvas, {
+    backgroundColor: 'rgb(255, 255, 255)'
 });
 
-const generatePDF = () => {
-  const invoiceElement = document.getElementById("invoice-container");
+document.getElementById('clear-signature').addEventListener('click', () => {
+    signaturePad.clear();
+});
 
-  const buttons = document.querySelectorAll("button");
-  const inputs = document.querySelectorAll("input");
-  const addRowButton = document.querySelector("#add-row");
-  const deleteButtons = document.querySelectorAll(".delete-items");
-  const actions = document.querySelectorAll(".action");
+// Generate PDF
+document.getElementById('download-pdf').addEventListener('click', () => {
+    const element = document.getElementById('invoice-container');
+    const opt = {
+        margin: 1,
+        filename: `invoice-${document.getElementById('invoice-num').value}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+});
 
-  // Hide buttons and prepare for PDF generation
-  buttons.forEach((button) => (button.style.display = "none"));
-  inputs.forEach((input) => {
-    input.style.padding = "5px 0px";
-    input.style.background = "transparent";
-    input.style.margin = "0px";
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Add first row
+    addItemRow();
+    
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('invoice-date').value = today;
+    
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    document.getElementById('due-date').value = thirtyDaysFromNow.toISOString().split('T')[0];
+    
+    // Generate initial QR code
+    generateQR();
+});
+// Add touch scroll for tables on mobile
+document.querySelectorAll('.product-table').forEach(table => {
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  table.addEventListener('mousedown', (e) => {
+    isDown = true;
+    table.classList.add('active');
+    startX = e.pageX - table.offsetLeft;
+    scrollLeft = table.scrollLeft;
   });
 
-  if (addRowButton) addRowButton.style.display = "none";
-  deleteButtons.forEach((button) => (button.style.display = "none"));
-  actions.forEach((action) => (action.style.display = "none"));
+  table.addEventListener('mouseleave', () => {
+    isDown = false;
+    table.classList.remove('active');
+  });
 
-  // Options for html2pdf
-  const options = {
-    margin: 1,
-    filename: "invoice.pdf",
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-  };
+  table.addEventListener('mouseup', () => {
+    isDown = false;
+    table.classList.remove('active');
+  });
 
-  // Generate and save the PDF
-  html2pdf()
-    .set(options)
-    .from(invoiceElement)
-    .save()
-    .then(() => {
-      // Restore the original styles after generating the PDF
-      buttons.forEach((button) => (button.style.display = "block"));
-      inputs.forEach((input) => {
-        input.style.padding = "";
-        input.style.background = "";
-        input.style.margin = "";
-      });
+  table.addEventListener('mousemove', (e) => {
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - table.offsetLeft;
+    const walk = (x - startX) * 2;
+    table.scrollLeft = scrollLeft - walk;
+  });
 
-      if (addRowButton) addRowButton.style.display = "inline-block";
-      deleteButtons.forEach(
-        (button) => (button.style.display = "inline-block")
-      );
-      actions.forEach((action) => (action.style.display = "inline-block"));
-    })
-    .catch((error) => {
-      console.error("Error generating PDF:", error);
+  // Touch events
+  table.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].pageX - table.offsetLeft;
+    scrollLeft = table.scrollLeft;
+  });
 
-      // Restore styles even if there is an error
-      buttons.forEach((button) => (button.style.display = "block"));
-      inputs.forEach((input) => {
-        input.style.padding = "";
-        input.style.background = "";
-        input.style.margin = "";
-      });
+  table.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 1) return;
+    const x = e.touches[0].pageX - table.offsetLeft;
+    const walk = (x - startX) * 2;
+    table.scrollLeft = scrollLeft - walk;
+  });
+});
 
-      if (addRowButton) addRowButton.style.display = "inline-block";
-      deleteButtons.forEach(
-        (button) => (button.style.display = "inline-block")
-      );
-      actions.forEach((action) => (action.style.display = "inline-block"));
-    });
-};
+// Prevent zoom on iOS when focusing inputs
+document.addEventListener('gesturestart', function(e) {
+  e.preventDefault();
+});
 
-// Attach the updated event listener
-document.getElementById("generate-pdf").addEventListener("click", generatePDF);
+// Add viewport height fix for mobile browsers
+function setMobileViewportHeight() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('resize', setMobileViewportHeight);
+setMobileViewportHeight();
