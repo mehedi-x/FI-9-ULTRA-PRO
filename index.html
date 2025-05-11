@@ -1,62 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400&display=swap" rel="stylesheet">
-    <title>Invoice</title>
-</head>
-<body>
-    <div class="invoice-container">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Nunito"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.0/html2pdf.bundle.min.js"
+      integrity="sha512-YLG3N5dufxTTEyEgDIKb3IMDTz/NsWiGH6+6OvzrJBu/XZNRiZb9UxuNoMn8RdTtuKgpjtzTeWm/ITkZkj2i3Q=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <header><h1>INVOICE GENERATOR</h1></header>
+
+    <div class="app">
+      <div id="invoice-container">
+        <!-- Invoice Title -->
+        <div class="invoice-title">TAX INVOICE</div>
+        <!-- Invoice Header -->
         <div class="invoice-header">
-            <div class="title-date">
-                <h2 class="title">INVOICE</h2>
-                <p class="date">01/12/20</p>
+          <div class="sec-1">
+            <div>
+              <label for="invoice-date">Bill Date:</label>
+              <input
+                type="date"
+                id="invoice-date"
+                class="input-control"
+                style="max-width: 140px"
+              />
             </div>
-            <div class="space"></div>
-            <p class="invoice-number">#08 279</p>
+            <div>
+              <label for="due-date">Due Date:</label>
+              <input
+                type="date"
+                id="due-date"
+                class="input-control"
+                style="max-width: 140px"
+                required
+              />
+            </div>
+          </div>
+          <div class="sec-2">
+            <label for="invoice-num">Invoice Number:</label>
+            <input
+              type="number"
+              id="invoice-num"
+              class="input-control"
+              value="1"
+              required
+            />
+          </div>
         </div>
+        <hr />
+        <!-- Billing Address Section -->
+        <div class="address-section">
+          <div>
+            <label for="bill-from">Bill From:</label>
+            <input
+              type="text"
+              placeholder="Invoice from?"
+              id="bill-from"
+              class="input-control"
+              required
+            />
+            <textarea
+              name="bill-from-address"
+              class="input-control"
+              placeholder="Billing Address"
+              rows="5"
+            ></textarea>
+          </div>
+          <div>
+            <label for="bill-to">Bill To:</label>
+            <input
+              type="text"
+              placeholder="Invoice to?"
+              id="bill-to"
+              class="input-control"
+              required
+            />
+            <textarea
+              name="bill-to-address"
+              placeholder="Billing Address"
+              rows="5"
+              class="input-control"
+            ></textarea>
+          </div>
+        </div>
+        <hr />
+        <!-- Product Section -->
         <div class="invoice-body">
-            <table>
-                <thead>
-                    <th style="padding-left:12px;">PRODUCT</th>
-                    <th>UNIT</th>
-                    <th>PRICE</th>
-                    <th>AMOUNT</th>
-                    <th style="text-align: right;">ACTION</th>
-                </thead>
-
-                <tbody id="table-body">
-                <tr class="single-row">
-                    <td><input type="text" placeholder="Product name" class="product left"></td>
-                    <td><input type="number" placeholder="0" name="unit" class="unit" id="unit" onkeyup="getInput()"></td>
-                    <td><input type="number" placeholder="0" name="price" class="price" id="price" onkeyup="getInput()"></td>
-                    <td><input type="number" placeholder="0" name="amount" class="amount" id="amount" disabled></td>
-                    <td style="text-align: right;"><span class="material-icons"  >delete_outline</span></td>
-                </tr>
-                
-                <tr style="padding-left: 20px">
-                    <td class="dashed "><div class="float">
-                        <a href="#" class="float" id="add-row">
-                            <span class="material-icons plus">add</span>
-                        </a>
-                    </div>
+          <table>
+            <!-- Header of Product Section  -->
+            <thead>
+              <tr>
+                <th>PRODUCT</th>
+                <th>UNIT</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+                <th class="action">ACTION</th>
+              </tr>
+            </thead>
+            <!-- Body of Product Section -->
+            <tbody id="item-list">
+              <tr class="single-row">
+                <td>
+                  <input
+                    type="text"
+                    placeholder="Product name"
+                    name="product name"
+                    id="product-name"
+                    class="input-control"
+                  />
                 </td>
-                    <td class="dashed"></td>
-                    <td class="dashed"></td>
-                    <td class="dashed"></td>
-                    <td class="dashed"></td>
-                </tr>
+                <td>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    name="unit"
+                    id="unit"
+                    class="input-control"
+                    onkeyup="getInput()"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    name="price"
+                    id="price"
+                    class="input-control"
+                    onkeyup="getInput()"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    name="amount"
+                    id="amount"
+                    class="input-control amount"
+                    disabled
+                  />
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    id="delete-item"
+                    class="btn delete-items"
+                    onclick="removeRow(this)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
             </tbody>
-            </table>
-            <div id="sum"><input type="text" placeholder="0.00" name="total" class="total" id="total" disabled></div>
-
+          </table>
+          <button id="add-row" class="btn">Add Item</button>
         </div>
+        <!-- Total Section -->
+        <div class="total-section">
+          <div class="left-sec">
+            <div>
+              <span>Subtotal:</span
+              ><input
+                type="number"
+                id="subtotal"
+                class="input-control"
+                placeholder="0"
+                readonly
+              />
+            </div>
+            <div>
+              <span>Tax: (%)</span
+              ><input
+                type="number"
+                id="tax"
+                class="input-control"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <span>Discount: (%)</span
+              ><input
+                type="number"
+                id="discount"
+                class="input-control"
+                placeholder="0"
+              />
+            </div>
+            <hr />
+            <div><span>Total:</span><span id="total">0.00</span></div>
+          </div>
+        </div>
+        <hr />
+        <!-- Notes Section -->
+        <div class="notes">
+          <label for="notes">Notes:</label>
+          <textarea
+            name="notes"
+            id="notes"
+            class="input-control"
+            placeholder="Thanks for your bussiness!"
+            rows="1"
+          ></textarea>
+        </div>
+        <!-- Button Container -->
+        <div class="button-container">
+          <button type="reset" class="btn">Reset</button>
+          <button type="button" id="generate-pdf" class="btn">
+            Generate PDF
+          </button>
+        </div>
+      </div>
     </div>
-
-
-    <script src="app.js" async defer></script>
-</body>
+    <footer>
+      <p>Designed and &lt;/&gt; by Prerna Saraogi</p>
+    </footer>
+    <script src="app.js"></script>
+  </body>
 </html>
