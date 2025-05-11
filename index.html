@@ -3,68 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FI-9 ULTRA PRO - Phase 2</title>
+  <title>FI-9 ULTRA PRO - Full Version</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>🧾 FI-9 ULTRA PRO</h1>
-    <p>Phase 2: Product Entry + Invoice UI</p>
+    <h1>FI-9 ULTRA PRO - Final Version</h1>
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
   </header>
 
   <main>
-    <section class="invoice-info">
-      <h2>Invoice Information</h2>
-      <input type="text" placeholder="Invoice No" id="invoiceNo" />
-      <input type="date" id="issueDate" />
-      <input type="date" id="dueDate" />
+    <section>
+      <input id="invoiceNo" placeholder="Invoice No">
+      <input id="issueDate" type="date">
+      <input id="dueDate" type="date">
       <select id="status">
         <option value="Unpaid">Unpaid</option>
         <option value="Paid">Paid</option>
       </select>
+      <input id="clientName" placeholder="Client Name">
+      <input id="clientPhone" placeholder="Phone Number">
     </section>
 
-    <section class="client-info">
-      <h2>Client Information</h2>
-      <input type="text" placeholder="Client Name" id="clientName" />
-      <input type="text" placeholder="Phone Number" id="clientPhone" />
-    </section>
-
-    <section class="product-entry">
-      <h2>Add Product</h2>
-      <input type="text" placeholder="Product Name" id="productName" />
-      <input type="number" placeholder="Quantity" id="productQty" />
-      <input type="number" placeholder="Rate" id="productRate" />
-      <input type="number" placeholder="VAT (%)" id="productVAT" />
-      <input type="number" placeholder="Discount (%)" id="productDiscount" />
+    <section>
+      <input id="productName" placeholder="Product Name">
+      <input id="productQty" type="number" placeholder="Qty">
+      <input id="productRate" type="number" placeholder="Rate">
+      <input id="productVAT" type="number" placeholder="VAT %">
+      <input id="productDiscount" type="number" placeholder="Discount %">
       <button onclick="addProduct()">Add Product</button>
     </section>
 
-    <section class="product-table">
-      <h2>Invoice Items</h2>
+    <section>
       <table id="invoiceTable">
         <thead>
-          <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>VAT</th>
-            <th>Discount</th>
-            <th>Total</th>
-          </tr>
+          <tr><th>Product</th><th>Qty</th><th>Rate</th><th>VAT</th><th>Discount</th><th>Total</th></tr>
         </thead>
         <tbody></tbody>
       </table>
       <h3 id="totalAmount">Total: Tk 0</h3>
     </section>
 
-    <button onclick="window.print()">🖨️ Print or Save as PDF</button>
+    <section>
+      <textarea id="notes" placeholder="Notes or Terms..."></textarea>
+      <canvas id="signatureCanvas" width="300" height="100" style="border:1px solid #ccc"></canvas>
+      <button onclick="clearSignature()">Clear Signature</button>
+    </section>
+
+    <section>
+      <button onclick="saveInvoice()">💾 Save</button>
+      <button onclick="loadInvoice()">📂 Load</button>
+      <button onclick="window.print()">🖨️ Print</button>
+    </section>
+
+    <section>
+      <canvas id="salesChart" width="400" height="200"></canvas>
+    </section>
   </main>
 
-  <footer>
-    <p>Thank you for using FI-9 ULTRA PRO</p>
-  </footer>
+  <footer><p>&copy; FI-9 ULTRA PRO</p></footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
